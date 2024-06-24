@@ -4,7 +4,7 @@ import com.store.entities.Product
 import com.store.entities.ProductDetails
 import com.store.entities.ProductId
 import com.store.entities.ProductType
-import com.store.services.ProductService
+import com.store.services.interfaces.IProductService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
@@ -12,7 +12,7 @@ import java.net.URI
 
 @RestController
 @RequestMapping("/products")
-class Products (private val productService: ProductService) {
+class Products (private val productService: IProductService) {
 
     @GetMapping
     fun getProducts(@RequestParam(required = false) type: ProductType?): ResponseEntity<List<Product>> {

@@ -7,15 +7,16 @@ import com.store.entities.ProductType
 import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicInteger
 import com.store.exceptions.IllegalInputException
+import com.store.services.interfaces.IProductService
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class ProductService {
+class ProductService: IProductService {
 
     private val products = ConcurrentHashMap<Int, Product>()
     private val idCounter = AtomicInteger()
 
-    fun getProductsByType(type: ProductType?): List<Product> {
+    override fun getProductsByType(type: ProductType?): List<Product> {
         return if (type == null) {
             products.values.toList()
         } else {
@@ -23,7 +24,7 @@ class ProductService {
         }
     }
 
-    fun createProduct(productDetails: ProductDetails): ProductId {
+    override fun createProduct(productDetails: ProductDetails): ProductId {
         if (productDetails.name.isEmpty() || productDetails.name.isBlank()) {
             throw IllegalInputException(400, "Product name cannot be empty", "/products")
         }

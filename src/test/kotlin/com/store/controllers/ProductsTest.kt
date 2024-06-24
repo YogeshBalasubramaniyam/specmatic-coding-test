@@ -5,7 +5,7 @@ import com.store.entities.Product
 import com.store.entities.ProductDetails
 import com.store.entities.ProductId
 import com.store.entities.ProductType
-import com.store.services.ProductService
+import com.store.services.interfaces.IProductService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -25,7 +25,7 @@ class ProductsControllerTest {
     private lateinit var mockMvc: MockMvc
 
     @Mock
-    private lateinit var productService: ProductService
+    private lateinit var productService: IProductService
 
     @InjectMocks
     private lateinit var productsController: Products
