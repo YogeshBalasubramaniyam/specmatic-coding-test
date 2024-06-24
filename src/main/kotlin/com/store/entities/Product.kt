@@ -2,6 +2,7 @@ package com.store.entities
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
@@ -18,7 +19,9 @@ data class Product(
 
     val type: ProductType,
 
-    val inventory: Int
+    val inventory: Int,
+
+    val cost: Number
 )
 
 data class ProductId(
@@ -30,9 +33,17 @@ data class ProductDetails @JsonCreator constructor(
     @JsonDeserialize(using = ForceStringDeserializer::class)
     val name: String,
 
-    @JsonProperty("type") val type: ProductType,
+    @JsonProperty("type")
+    @JsonDeserialize(using = ProductTypeDeserializer::class)
+    val type: ProductType,
 
-    @JsonProperty("inventory") val inventory: Int
+    @JsonProperty("inventory")
+    @JsonDeserialize(using = ForceIntegerDeserializer::class)
+    val inventory: Int,
+
+    @JsonProperty("cost")
+    @JsonDeserialize(using = ForceNumberDeserializer::class)
+    val cost: Number
 )
 
 enum class ProductType {
@@ -55,5 +66,51 @@ class ForceStringDeserializer : JsonDeserializer<String>() {
             )
         }
         return jsonParser.valueAsString
+    }
+}
+
+class ForceIntegerDeserializer : JsonDeserializer<Int>() {
+    @Throws(IOException::class)
+    override fun deserialize(
+        jsonParser: JsonParser, deserializationContext: DeserializationContext
+    ): Int {
+        if (jsonParser.currentToken != JsonToken.VALUE_NUMBER_INT) {
+            deserializationContext.reportWrongTokenException(
+                Int::class.java, JsonToken.VALUE_NUMBER_INT,
+                "Attempted to parse token %s to integer",
+                jsonParser.currentToken
+            )
+        }
+        return jsonParser.valueAsInt
+    }
+}
+
+class ForceNumberDeserializer : JsonDeserializer<Number>() {
+    @Throws(IOException::class)
+    override fun deserialize(
+        jsonParser: JsonParser, deserializationContext: DeserializationContext
+    ): Number {
+        if (jsonParser.currentToken != JsonToken.VALUE_NUMBER_INT && jsonParser.currentToken != JsonToken.VALUE_NUMBER_FLOAT) {
+            deserializationContext.reportWrongTokenException(
+                Number::class.java, JsonToken.VALUE_NUMBER_INT,
+                "Attempted to parse token %s to number",
+                jsonParser.currentToken
+            )
+        }
+        return jsonParser.valueAsDouble
+    }
+}
+
+class ProductTypeDeserializer : JsonDeserializer<ProductType>() {
+    @Throws(IOException::class)
+    override fun deserialize(
+        jsonParser: JsonParser, deserializationContext: DeserializationContext
+    ): ProductType {
+        val value = jsonParser.valueAsString
+        return try {
+            ProductType.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            throw JsonParseException(jsonParser, "Invalid value for ProductType: $value")
+        }
     }
 }

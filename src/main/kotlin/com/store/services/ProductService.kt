@@ -31,7 +31,7 @@ class ProductService {
             throw IllegalInputException(400, "Inventory must be present and should be between 0 and 999", "/products")
         }
         val id = idCounter.incrementAndGet()
-        val product = Product(id, productDetails.name, productDetails.type, productDetails.inventory)
+        val product = Product(id, productDetails.name, productDetails.type, productDetails.inventory, productDetails.cost)
         products[id] = product
         return ProductId(id)
     }

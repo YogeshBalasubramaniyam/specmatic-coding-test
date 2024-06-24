@@ -23,8 +23,8 @@ class ProductServiceTest {
     fun `test getProductsByType with null type returns all products`() {
         val products = ConcurrentHashMap<Int, Product>()
         val idCounter = AtomicInteger()
-        products[1] = Product(1, "Product 1", ProductType.book, 10)
-        products[2] = Product(2, "Product 2", ProductType.gadget, 20)
+        products[1] = Product(1, "Product 1", ProductType.book, 10, 10)
+        products[2] = Product(2, "Product 2", ProductType.gadget, 20, 20)
         productService.javaClass.getDeclaredField("products").apply {
             isAccessible = true
             set(productService, products)
@@ -45,8 +45,8 @@ class ProductServiceTest {
     fun `test getProductsByType with specific type returns filtered products`() {
         val products = ConcurrentHashMap<Int, Product>()
         val idCounter = AtomicInteger()
-        products[1] = Product(1, "Product 1", ProductType.book, 10)
-        products[2] = Product(2, "Product 2", ProductType.gadget, 20)
+        products[1] = Product(1, "Product 1", ProductType.book, 10, 10)
+        products[2] = Product(2, "Product 2", ProductType.gadget, 20, 20)
         productService.javaClass.getDeclaredField("products").apply {
             isAccessible = true
             set(productService, products)
@@ -65,7 +65,7 @@ class ProductServiceTest {
 
     @Test
     fun `test createProduct with valid details`() {
-        val productDetails = ProductDetails("Product 1", ProductType.book, 10)
+        val productDetails = ProductDetails("Product 1", ProductType.book, 10, 10)
 
         val productId = productService.createProduct(productDetails)
 
@@ -79,7 +79,7 @@ class ProductServiceTest {
 
     @Test
     fun `test createProduct with empty name throws exception`() {
-        val productDetails = ProductDetails("", ProductType.book, 10)
+        val productDetails = ProductDetails("", ProductType.book, 10, 10)
 
         val exception = assertThrows(IllegalInputException::class.java) {
             productService.createProduct(productDetails)
@@ -91,8 +91,8 @@ class ProductServiceTest {
 
     @Test
     fun `test createProduct with inventory out of bounds throws exception`() {
-        val productDetailsLow = ProductDetails("Product 1", ProductType.book, 0)
-        val productDetailsHigh = ProductDetails("Product 1", ProductType.book, 10000)
+        val productDetailsLow = ProductDetails("Product 1", ProductType.book, 0, 10)
+        val productDetailsHigh = ProductDetails("Product 1", ProductType.book, 10000, 10)
 
         val exceptionLow = assertThrows(IllegalInputException::class.java) {
             productService.createProduct(productDetailsLow)

@@ -50,9 +50,10 @@ class ExceptionHandler {
             val customMessage = when {
                 message?.contains("ProductDetails.<init>, parameter name") == true -> "Product name is required"
                 message?.contains("ProductDetails.<init>, parameter type") == true -> "Product type is required"
+                message?.contains("ProductDetails.<init>, parameter cost") == true -> "Product cost is required"
                 message?.contains("Cannot deserialize value of type `com.store.entities.ProductType`") == true -> "Invalid product type"
                 message?.contains("Cannot coerce empty String (\"\") to `com.store.entities.ProductType`") == true -> "Product type is missing or invalid"
-                else -> "Invalid input format"
+                else -> message ?: "Invalid input format"
             }
             error = ErrorResponse(
                 timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),

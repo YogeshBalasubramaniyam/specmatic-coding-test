@@ -39,8 +39,8 @@ class ProductsControllerTest {
 
     @Test
     fun `test getProducts endpoint`() {
-        val product1 = Product(1, "Product 1", ProductType.other, 100)
-        val product2 = Product(2, "Product 2", ProductType.other, 50)
+        val product1 = Product(1, "Product 1", ProductType.other, 100, 10)
+        val product2 = Product(2, "Product 2", ProductType.other, 50, 20)
         val products = listOf(product1, product2)
 
         Mockito.`when`(productService.getProductsByType(ProductType.other)).thenReturn(products)
@@ -55,10 +55,10 @@ class ProductsControllerTest {
 
     @Test
     fun `test getProducts endpoint without type`() {
-        val product1 = Product(1, "Product 1", ProductType.book, 100)
-        val product2 = Product(2, "Product 2", ProductType.gadget, 50)
-        val product3 = Product(2, "Product 2", ProductType.food, 500)
-        val product4 = Product(2, "Product 2", ProductType.other, 20)
+        val product1 = Product(1, "Product 1", ProductType.book, 100, 10)
+        val product2 = Product(2, "Product 2", ProductType.gadget, 50, 20)
+        val product3 = Product(2, "Product 2", ProductType.food, 500, 20)
+        val product4 = Product(2, "Product 2", ProductType.other, 20, 20)
         val products = listOf(product1, product2, product3, product4)
 
         Mockito.`when`(productService.getProductsByType(null)).thenReturn(products)
@@ -84,7 +84,7 @@ class ProductsControllerTest {
 
     @Test
     fun `test createProduct endpoint`() {
-        val productDetails = ProductDetails("Product 1", ProductType.book, 100)
+        val productDetails = ProductDetails("Product 1", ProductType.book, 100, 10.0)
         val productId = ProductId(1)
 
         Mockito.`when`(productService.createProduct(productDetails)).thenReturn(productId)
@@ -103,6 +103,7 @@ class ProductsControllerTest {
         assert(responseBody.contains("\"id\":1"))
         Mockito.verify(productService).createProduct(productDetails)
     }
+
 
     @Test
     fun `test createProduct endpoint without product details`() {

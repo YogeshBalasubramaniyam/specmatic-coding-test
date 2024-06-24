@@ -68,6 +68,20 @@ class ExceptionHandlerTest {
     }
 
     @Test
+    fun `test handleInvalidFormatException with JsonMappingException for Product cost required`() {
+        val cause = Mockito.mock(JsonMappingException::class.java)
+        Mockito.`when`(cause.message).thenReturn("ProductDetails.<init>, parameter cost")
+
+        val ex = HttpMessageNotReadableException("Invalid input", cause)
+
+        val response: ResponseEntity<ErrorResponse> = exceptionHandler.handleInvalidFormatException(ex)
+
+        assertEquals(400, response.statusCodeValue)
+        assertEquals("Product cost is required", response.body?.error)
+        assertEquals("/products", response.body?.path)
+    }
+
+    @Test
     fun `test handleInvalidFormatException with JsonMappingException for empty product type`() {
         val cause = Mockito.mock(JsonMappingException::class.java)
         Mockito.`when`(cause.message).thenReturn("Cannot coerce empty String (\"\") to `com.store.entities.ProductType`")
