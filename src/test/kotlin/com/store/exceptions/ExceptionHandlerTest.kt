@@ -130,6 +130,6 @@ class ExceptionHandlerTest {
 
         assertEquals(500, response.statusCodeValue)
         assertEquals("Unexpected error", response.body?.error)
-        assertEquals("NOT_KNOWN", response.body?.path)
+        assertEquals("Not Known", response.body?.path)
     }
 }

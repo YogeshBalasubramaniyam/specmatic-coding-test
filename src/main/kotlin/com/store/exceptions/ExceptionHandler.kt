@@ -79,7 +79,7 @@ class ExceptionHandler {
             timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
             status = 500,
             error = ex.message ?: "Internal Server Error",
-            path = "NOT_KNOWN"
+            path = "Not Known"
         )
         return ResponseEntity.status(500).body(error)
     }
