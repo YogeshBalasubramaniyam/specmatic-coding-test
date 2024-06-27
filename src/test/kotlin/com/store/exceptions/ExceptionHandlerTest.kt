@@ -68,16 +68,16 @@ class ExceptionHandlerTest {
     }
 
     @Test
-    fun `test handleInvalidFormatException with JsonMappingException for Product cost required`() {
+    fun `test handleInvalidFormatException with JsonMappingException for Product cost as null`() {
         val cause = Mockito.mock(JsonMappingException::class.java)
-        Mockito.`when`(cause.message).thenReturn("ProductDetails.<init>, parameter cost")
+        Mockito.`when`(cause.message).thenReturn("value failed for JSON property cost due to missing (therefore NULL) value for creator parameter cost which is a non-nullable type")
 
         val ex = HttpMessageNotReadableException("Invalid input", cause)
 
         val response: ResponseEntity<ErrorResponse> = exceptionHandler.handleInvalidFormatException(ex)
 
         assertEquals(400, response.statusCodeValue)
-        assertEquals("Product cost is required", response.body?.error)
+        assertEquals("Product cost cannot be null", response.body?.error)
         assertEquals("/products", response.body?.path)
     }
 

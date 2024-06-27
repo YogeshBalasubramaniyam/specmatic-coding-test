@@ -114,4 +114,27 @@ class ProductsControllerTest {
         )
             .andExpect(status().isBadRequest)
     }
+
+    @Test
+    fun `test createProduct endpoint without cost`() {
+        val productDetails = ProductDetails("Product 1", ProductType.book, 100, -1.0)
+        val productDetailsRequest = ProductDetails("Product 1", ProductType.book, 100)
+        val productId = ProductId(1)
+
+        Mockito.`when`(productService.createProduct(productDetails)).thenReturn(productId)
+
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders.post("/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productDetailsRequest))
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isCreated)
+            .andReturn()
+
+        val response = result.response
+        val responseBody = response.contentAsString
+        assert(responseBody.contains("\"id\":1"))
+        Mockito.verify(productService).createProduct(productDetails)
+    }
 }

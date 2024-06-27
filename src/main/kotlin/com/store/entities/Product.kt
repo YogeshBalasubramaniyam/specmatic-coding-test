@@ -21,7 +21,7 @@ data class Product(
 
     val inventory: Int,
 
-    val cost: Number
+    val cost: Number = -1
 )
 
 data class ProductId(
@@ -43,7 +43,7 @@ data class ProductDetails @JsonCreator constructor(
 
     @JsonProperty("cost")
     @JsonDeserialize(using = ForceNumberDeserializer::class)
-    val cost: Number
+    val cost: Number = -1
 )
 
 enum class ProductType {
