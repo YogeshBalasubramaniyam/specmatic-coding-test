@@ -24,18 +24,7 @@ class ExceptionHandlerTest {
         val response: ResponseEntity<ErrorResponse> = exceptionHandler.handleTypeMismatchException(ex)
 
         assertEquals(400, response.statusCodeValue)
-        assertEquals("Invalid product type: invalidType", response.body?.error)
-        assertEquals("/products", response.body?.path)
-    }
-
-    @Test
-    fun `test handleIllegalInputException`() {
-        val ex = IllegalInputException(400, "Illegal input", "/products")
-
-        val response: ResponseEntity<ErrorResponse> = exceptionHandler.handleIllegalInputException(ex)
-
-        assertEquals(400, response.statusCodeValue)
-        assertEquals("Illegal input", response.body?.error)
+        assertEquals("Invalid product type", response.body?.error)
         assertEquals("/products", response.body?.path)
     }
 
@@ -110,6 +99,34 @@ class ExceptionHandlerTest {
     }
 
     @Test
+    fun `test handleInvalidFormatException with ValueInstantiationException for Invalid inventory value`() {
+        val cause = Mockito.mock(com.fasterxml.jackson.databind.exc.ValueInstantiationException::class.java)
+        Mockito.`when`(cause.message).thenReturn("Cannot construct instance of `com.store.entities.ProductDetails`, problem: Inventory must be between 1 and 9999")
+
+        val ex = HttpMessageNotReadableException("Invalid input", cause)
+
+        val response: ResponseEntity<ErrorResponse> = exceptionHandler.handleInvalidFormatException(ex)
+
+        assertEquals(400, response.statusCodeValue)
+        assertEquals("Inventory must be between 1 and 9999", response.body?.error)
+        assertEquals("/products", response.body?.path)
+    }
+
+    @Test
+    fun `test handleInvalidFormatException with ValueInstantiationException for empty product name`() {
+        val cause = Mockito.mock(com.fasterxml.jackson.databind.exc.ValueInstantiationException::class.java)
+        Mockito.`when`(cause.message).thenReturn("Cannot construct instance of `com.store.entities.ProductDetails`, problem: Product name cannot be empty or blank")
+
+        val ex = HttpMessageNotReadableException("Invalid input", cause)
+
+        val response: ResponseEntity<ErrorResponse> = exceptionHandler.handleInvalidFormatException(ex)
+
+        assertEquals(400, response.statusCodeValue)
+        assertEquals("Product name cannot be empty or blank", response.body?.error)
+        assertEquals("/products", response.body?.path)
+    }
+
+    @Test
     fun `test handleInvalidFormatException with JsonParseException`() {
         val cause = Mockito.mock(JsonParseException::class.java)
 
@@ -124,12 +141,12 @@ class ExceptionHandlerTest {
 
     @Test
     fun `test handleAllOtherExceptions`() {
-        val ex = Exception("Unexpected error")
+        val ex = Exception()
 
         val response: ResponseEntity<ErrorResponse> = exceptionHandler.handleAllOtherExceptions(ex)
 
-        assertEquals(500, response.statusCodeValue)
-        assertEquals("Unexpected error", response.body?.error)
-        assertEquals("Not Known", response.body?.path)
+        assertEquals(400, response.statusCodeValue)
+        assertEquals("Something went wrong! Please try again or contact support.", response.body?.error)
+        assertEquals("/products", response.body?.path)
     }
 }

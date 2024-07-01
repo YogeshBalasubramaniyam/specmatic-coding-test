@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: src/main/kotlin/com/store/exceptions/ExceptionHandler.kt
+  checksum: 325d434cdbaa741adbb636e3a8d8b2faa1b301f9d2776fff38035cc64b4ddc08
+version: "1.0"

@@ -18,25 +18,15 @@ class ExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun handleTypeMismatchException(ex: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
         if (ex.requiredType?.name == "com.store.entities.ProductType") {
-            val error = ErrorResponse(
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                status = 400,
-                error = "Invalid product type: ${ex.value}",
-                path = "/products"
-            )
+            val error = createErrorResponse("Invalid product type")
             return ResponseEntity.status(400).body(error)
         }
         return handleAllOtherExceptions(ex)
     }
 
-    @ExceptionHandler(IllegalInputException::class)
-    fun handleIllegalInputException(ex: IllegalInputException): ResponseEntity<ErrorResponse> {
-        val error = ErrorResponse(
-            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            status = ex.status,
-            error = ex.message,
-            path = ex.path
-        )
+    @ExceptionHandler(JsonParseException::class)
+    fun handleJsonParseException(ex: JsonParseException): ResponseEntity<ErrorResponse> {
+        val error = createErrorResponse("Invalid JSON format")
         return ResponseEntity.status(400).body(error)
     }
 
@@ -45,42 +35,68 @@ class ExceptionHandler {
         val cause = ex.cause
         var error: ErrorResponse? = null
 
-        if (cause is JsonMappingException) {
-            val message = cause.message
-            val customMessage = when {
-                message?.contains("ProductDetails.<init>, parameter name") == true -> "Product name is required"
-                message?.contains("ProductDetails.<init>, parameter type") == true -> "Product type is required"
-                message?.contains("Cannot deserialize value of type `com.store.entities.ProductType`") == true -> "Invalid product type"
-                message?.contains("value failed for JSON property cost due to missing (therefore NULL) value for creator parameter cost which is a non-nullable type") == true -> "Product cost cannot be null"
-                message?.contains("Cannot coerce empty String (\"\") to `com.store.entities.ProductType`") == true -> "Product type is missing or invalid"
-                else -> message ?: "Invalid input format"
-            }
-            error = ErrorResponse(
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                status = 400,
-                error = customMessage,
-                path = "/products"
-            )
-        } else if (cause is JsonParseException) {
-            error = ErrorResponse(
-                timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                status = 400,
-                error = "Invalid JSON format",
-                path = "/products"
-            )
+        error = when (cause) {
+            is JsonMappingException -> handleJsonMappingExceptionCause(cause)
+            is JsonParseException -> handleJsonParseException()
+            is IllegalInputException -> handleIllegalInputException(cause)
+            else -> null
         }
 
         return ResponseEntity.status(400).body(error)
     }
 
+    private fun handleJsonMappingExceptionCause(cause: JsonMappingException): ErrorResponse {
+        return if (cause is com.fasterxml.jackson.databind.exc.ValueInstantiationException) {
+            handleValueInstantiationException(cause)
+        } else {
+            handleJsonMappingException(cause)
+        }
+    }
+
+    private fun handleValueInstantiationException(ex: com.fasterxml.jackson.databind.exc.ValueInstantiationException): ErrorResponse {
+        val message = ex.message
+        val errorMessages = mapOf(
+            "Cannot construct instance of `com.store.entities.ProductDetails`, problem: Product name cannot be empty or blank" to "Product name cannot be empty or blank",
+            "Cannot construct instance of `com.store.entities.ProductDetails`, problem: Inventory must be between 1 and 9999" to "Inventory must be between 1 and 9999"
+        )
+        val customMessage = errorMessages.entries.find { message?.contains(it.key) == true }?.value ?: message ?: "Invalid input"
+        return createErrorResponse(customMessage)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleAllOtherExceptions(ex: Exception): ResponseEntity<ErrorResponse> {
-        val error = ErrorResponse(
-            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-            status = 500,
-            error = ex.message ?: "Internal Server Error",
-            path = "Not Known"
+        val error = createErrorResponse(ex.message ?: "Something went wrong! Please try again or contact support.")
+        return ResponseEntity.status(400).body(error)
+    }
+
+    private fun handleIllegalInputException(ex: IllegalInputException): ErrorResponse {
+        return createErrorResponse(ex.message ?: "Invalid input")
+    }
+
+    private fun handleJsonMappingException(cause: JsonMappingException): ErrorResponse {
+        val message = cause.message
+        val errorMessages = mapOf(
+            "ProductDetails.<init>, parameter name" to "Product name is required",
+            "ProductDetails.<init>, parameter type" to "Product type is required",
+            "Cannot deserialize value of type `com.store.entities.ProductType`" to "Invalid product type",
+            "value failed for JSON property cost due to missing (therefore NULL) value for creator parameter cost which is a non-nullable type" to "Product cost cannot be null",
+            "Cannot coerce empty String (\"\") to `com.store.entities.ProductType`" to "Product type is missing or invalid",
         )
-        return ResponseEntity.status(500).body(error)
+
+        val customMessage = errorMessages.entries.find { message?.contains(it.key) == true }?.value ?: message ?: "Invalid input format"
+        return createErrorResponse(customMessage)
+    }
+
+    private fun handleJsonParseException(): ErrorResponse {
+        return createErrorResponse("Invalid JSON format")
+    }
+
+    private fun createErrorResponse(error: String): ErrorResponse {
+        return ErrorResponse(
+            timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+            status = 400,
+            error = error,
+            path = "/products"
+        )
     }
 }

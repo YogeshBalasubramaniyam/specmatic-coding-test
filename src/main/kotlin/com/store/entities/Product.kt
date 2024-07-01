@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.store.exceptions.IllegalInputException
 import java.io.IOException
 
 
@@ -44,7 +45,16 @@ data class ProductDetails @JsonCreator constructor(
     @JsonProperty("cost")
     @JsonDeserialize(using = ForceNumberDeserializer::class)
     val cost: Number = -1
-)
+) {
+    init {
+        if (inventory !in 1..9999) {
+            throw IllegalInputException(400, "Inventory must be between 1 and 9999", "/products")
+        }
+        if (name.isBlank() || name.isEmpty()) {
+            throw IllegalInputException(400, "Product name cannot be empty or blank", "/products")
+        }
+    }
+}
 
 enum class ProductType {
     book,
