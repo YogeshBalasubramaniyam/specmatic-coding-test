@@ -1,8 +1,7 @@
 package com.store.controllers
 
 import com.store.entities.*
-import com.store.exceptions.IllegalInputException
-import com.store.services.ProductService
+import com.store.services.interfaces.IProductService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -18,7 +17,7 @@ import javax.validation.Valid
 @RestController
 @Validated
 @RequestMapping("\${api.base-path:}")
-open class ProductsApiController(private val productService: ProductService) {
+open class ProductsApiController(private val productService: IProductService) {
 
     @Operation(
         summary = "GET Products based on type",
@@ -52,7 +51,6 @@ open class ProductsApiController(private val productService: ProductService) {
         consumes = ["application/json"]
     )
     open fun productsPost(@Parameter(description = "") @Valid @RequestBody(required = false) productDetails: ProductDetails?): ResponseEntity<ProductId> {
-        productDetails ?: throw IllegalInputException(400, "Product details must be provided", "/products")
         return ResponseEntity(productService.createProduct(productDetails), HttpStatus.CREATED)
     }
 }

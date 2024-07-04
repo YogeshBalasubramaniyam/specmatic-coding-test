@@ -1,19 +1,16 @@
 package com.store.entities
 
-import java.util.Objects
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
-import com.store.entities.ProductType
-import javax.validation.constraints.DecimalMax
-import javax.validation.constraints.DecimalMin
-import javax.validation.constraints.Email
-import javax.validation.constraints.Max
-import javax.validation.constraints.Min
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Pattern
-import javax.validation.constraints.Size
-import javax.validation.Valid
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.store.entities.deserializers.ForceBigDecimalDeserializer
+import com.store.entities.deserializers.ForceIntegerDeserializer
+import com.store.entities.deserializers.ForceStringDeserializer
+import com.store.entities.deserializers.ProductTypeDeserializer
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotEmpty
 
 /**
  * 
@@ -25,20 +22,28 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class ProductDetails(
 
     @Schema(example = "null", required = true, description = "")
-    @get:JsonProperty("name", required = true) val name: kotlin.String,
+    @get:NotEmpty(message = "Product name must not be empty")
+    @get:JsonProperty("name", required = true)
+    @JsonDeserialize(using = ForceStringDeserializer::class)
+    val name: kotlin.String,
 
     @field:Valid
     @Schema(example = "null", required = true, description = "")
-    @get:JsonProperty("type", required = true) val type: ProductType,
+    @get:JsonProperty("type", required = true)
+    @JsonDeserialize(using = ProductTypeDeserializer::class)
+    val type: ProductType,
 
-    @get:Min(1)
-    @get:Max(9999)
+    @get:Min(1, message = "Inventory must be between 1 and 9999")
+    @get:Max(9999, message = "Inventory must be between 1 and 9999")
     @Schema(example = "null", required = true, description = "")
-    @get:JsonProperty("inventory", required = true) val inventory: kotlin.Int,
+    @JsonDeserialize(using = ForceIntegerDeserializer::class)
+    @get:JsonProperty("inventory", required = true)
+    val inventory: kotlin.Int,
 
     @Schema(example = "null", description = "")
-    @get:JsonProperty("cost") val cost: java.math.BigDecimal? = null
+    @get:JsonProperty("cost")
+    @JsonDeserialize(using = ForceBigDecimalDeserializer::class)
+    val cost: java.math.BigDecimal = (-1).toBigDecimal()
 ) {
 
 }
-

@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.math.BigDecimal
 
 @ExtendWith(MockitoExtension::class)
-class ProductsControllerTest {
+class ProductsApiControllerTest {
 
     private lateinit var mockMvc: MockMvc
 
@@ -103,17 +103,6 @@ class ProductsControllerTest {
         val responseBody = response.contentAsString
         assert(responseBody.contains("\"id\":1"))
         Mockito.verify(productService).createProduct(productDetails)
-    }
-
-
-    @Test
-    fun `test createProduct endpoint without product details`() {
-        mockMvc.perform(
-            MockMvcRequestBuilders.post("/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isBadRequest)
     }
 
     @Test

@@ -7,5 +7,5 @@ import com.store.entities.ProductType
 
 interface IProductService {
     fun getProductsByType(type: ProductType?): List<Product>
-    fun createProduct(productDetails: ProductDetails): ProductId
+    fun createProduct(productDetails: ProductDetails?): ProductId
 }

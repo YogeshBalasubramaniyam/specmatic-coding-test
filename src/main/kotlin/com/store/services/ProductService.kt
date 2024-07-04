@@ -11,7 +11,7 @@ import com.store.services.interfaces.IProductService
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class ProductService: IProductService {
+class ProductService : IProductService {
 
     private val products = ConcurrentHashMap<Int, Product>()
     private val idCounter = AtomicInteger()
@@ -24,9 +24,13 @@ class ProductService: IProductService {
         }
     }
 
-    override fun createProduct(productDetails: ProductDetails): ProductId {
+    override fun createProduct(productDetails: ProductDetails?): ProductId {
+        if (productDetails == null) {
+            throw IllegalInputException(400, "Product details must be provided.", "/products")
+        }
         val id = idCounter.incrementAndGet()
-        val product = Product(id, productDetails.name, productDetails.type, productDetails.inventory, productDetails.cost)
+        val product =
+            Product(id, productDetails.name, productDetails.type, productDetails.inventory, productDetails.cost)
         products[id] = product
         return ProductId(id)
     }
