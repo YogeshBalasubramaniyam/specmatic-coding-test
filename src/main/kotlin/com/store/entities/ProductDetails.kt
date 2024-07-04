@@ -17,16 +17,12 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 /**
  * 
- * @param id 
  * @param name 
  * @param type 
  * @param inventory 
  * @param cost 
  */
-data class Product(
-
-    @Schema(example = "null", required = true, description = "")
-    @get:JsonProperty("id", required = true) val id: kotlin.Int,
+data class ProductDetails(
 
     @Schema(example = "null", required = true, description = "")
     @get:JsonProperty("name", required = true) val name: kotlin.String,
