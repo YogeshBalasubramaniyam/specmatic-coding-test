@@ -1,1 +1,7 @@
 src/main/kotlin/com/store/entities/ProductDetails.kt
+src/main/kotlin/com/store/entities/Product.kt
+src/main/kotlin/com/store/entities/ProductId.kt
+src/main/kotlin/com/store/entities/ProductType.kt
+src/main/kotlin/com/store/entities/ErrorResponseBody.kt
+src/main/kotlin/com/store/controllers/ProductsApiController.kt
+src/test/kotlin/com/store/controllers/ProductsApiTest.kt
