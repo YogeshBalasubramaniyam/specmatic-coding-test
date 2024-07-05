@@ -262,6 +262,7 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <inputSpec>${project.basedir}/products_api.yaml</inputSpec>
                             <generatorName>kotlin-spring</generatorName>
