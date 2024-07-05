@@ -5,3 +5,11 @@ src/main/kotlin/com/store/entities/ProductType.kt
 src/main/kotlin/com/store/entities/ErrorResponseBody.kt
 src/main/kotlin/com/store/controllers/ProductsApiController.kt
 src/test/kotlin/com/store/controllers/ProductsApiTest.kt
+pom.xml
+README.md
+src/main/kotlin/com/store/controllers/ApiUtil.kt
+src/main/kotlin/com/store/controllers/Exceptions.kt
+src/main/kotlin/org/
+src/main/resources/application.yaml
+src/main/resources/openapi.yaml
+src/main/test/kotlin/com/store/controllers/ProductsApiTest.kt

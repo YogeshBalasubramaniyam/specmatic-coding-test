@@ -252,6 +252,29 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.7.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/products_api.yaml</inputSpec>
+                            <generatorName>kotlin-spring</generatorName>
+                            <output>${project.basedir}</output>
+                            <configOptions>
+                                <apiPackage>com.store.controllers</apiPackage>
+                                <modelPackage>com.store.entities</modelPackage>
+                                <gradleBuildFile>false</gradleBuildFile>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
