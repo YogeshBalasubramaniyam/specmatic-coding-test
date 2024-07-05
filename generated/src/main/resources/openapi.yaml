@@ -1,0 +1,146 @@
+openapi: 3.0.1
+info:
+  title: Order API
+  version: "2.0"
+servers:
+- url: http://localhost:3000
+paths:
+  /products:
+    get:
+      parameters:
+      - examples:
+          GET_PRODUCTS:
+            value: gadget
+        explode: true
+        in: query
+        name: type
+        required: false
+        schema:
+          $ref: '#/components/schemas/ProductType'
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                GET_PRODUCTS:
+                  value:
+                  - id: 1
+                    name: XYZ Phone
+                    type: gadget
+                    inventory: 2
+                    cost: 1000
+              schema:
+                items:
+                  $ref: '#/components/schemas/Product'
+                type: array
+          description: List of products in the response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+          description: Bad Request
+      summary: GET Products based on type
+    post:
+      requestBody:
+        content:
+          application/json:
+            examples:
+              CREATE_PRODUCT:
+                value:
+                  name: iPhone
+                  type: gadget
+                  inventory: 100
+                  cost: 1000
+            schema:
+              $ref: '#/components/schemas/ProductDetails'
+      responses:
+        "201":
+          content:
+            application/json:
+              examples:
+                CREATE_PRODUCT:
+                  value:
+                    id: 1
+              schema:
+                $ref: '#/components/schemas/ProductId'
+          description: POST /products
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseBody'
+          description: Bad Request
+      summary: POST /products
+components:
+  schemas:
+    ProductDetails:
+      example:
+        cost: 6.027456183070403
+        name: name
+        type: book
+        inventory: 801
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/ProductType'
+        inventory:
+          maximum: 9999
+          minimum: 1
+          type: integer
+        cost:
+          type: number
+      required:
+      - inventory
+      - name
+      - type
+      title: Product Details
+      type: object
+    ProductType:
+      enum:
+      - book
+      - food
+      - gadget
+      - other
+      title: Product Type
+      type: string
+    ProductId:
+      example:
+        id: 0
+      properties:
+        id:
+          type: integer
+      required:
+      - id
+      title: Product Id
+      type: object
+    Product:
+      allOf:
+      - $ref: '#/components/schemas/ProductId'
+      - $ref: '#/components/schemas/ProductDetails'
+      example:
+        cost: 1.4658129805029452
+        name: name
+        id: 0
+        type: book
+        inventory: 6027
+      title: Product
+    ErrorResponseBody:
+      example:
+        path: path
+        error: error
+        timestamp: 2000-01-23T04:56:07.000+00:00
+        status: 5
+      properties:
+        timestamp:
+          format: date-time
+          type: string
+        status:
+          type: integer
+        error:
+          type: string
+        path:
+          type: string
+      type: object

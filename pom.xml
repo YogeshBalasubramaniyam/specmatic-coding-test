@@ -266,7 +266,7 @@
                         <configuration>
                             <inputSpec>${project.basedir}/products_api.yaml</inputSpec>
                             <generatorName>kotlin-spring</generatorName>
-                            <output>${project.basedir}</output>
+                            <output>${project.basedir}/generated</output>
                             <configOptions>
                                 <apiPackage>com.store.controllers</apiPackage>
                                 <modelPackage>com.store.entities</modelPackage>
